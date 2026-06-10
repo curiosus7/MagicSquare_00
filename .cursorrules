@@ -1,0 +1,39 @@
+# .cursorrules — MagicSquare_00 (세션 3)
+
+## 도메인
+- 4×4 격자. 빈칸=0, 채운 칸=1~16.
+- 10선 = **행 4 + 열 4 + 대각 2**. ID: R1~R4, C1~C4, D1(주 ↘), D2(반 ↙).
+- 셀 매핑 (0-based): Rn = n행 전체, Cn = n열 전체, D1 = (i,i), D2 = (i,3-i) for i in 0..3.
+- **10선 전부 검사**. 한 줄도 누락 금지.
+
+## SSOT (코드)
+- `src/validate_lines.py` — `MAGIC_CONSTANT`, `LINE_IDS`, `LINE_CELLS` 단일 정의.
+- 리터럴 **34**·줄 ID 하드코딩 금지. 테스트·구현은 위 상수 import.
+- 문서 규칙 SSOT: 이 파일(`.cursorrules`).
+
+## API 계약
+- 진입점: `validate_lines(grid) -> dict`
+- 입력: `grid` = 4×4 `list[list[int]]`, 값 0~16. **4×4가 아니면 `ValueError`.**
+- 출력: `{"status": "pass"|"fail"|"incomplete", "failed_lines": [str, ...]}`
+- **선행:** 0이 하나라도 있으면 합 계산·34 비교 **하지 않음** → `incomplete`, `failed_lines=[]` (fail 아님).
+- 16칸 완성 + 10선 모두 34 → `pass`, `failed_lines=[]`.
+- 16칸 완성 + 합≠34 선 있음 → `fail`, `failed_lines`에 해당 ID (**`LINE_IDS` 순서**).
+
+## TDD
+- 순서: **RED → GREEN → REFACTOR**. 건너뛰기 금지.
+- **RED:** `tests/`만 수정 · `src/` 수정 금지 · FAIL 확인 후 진행 (AssertionError 등).
+- **GREEN:** `src/`만 수정 · `tests/` 수정 금지 · 통과하는 **최소** 구현.
+- **REFACTOR:** Green 유지 · 구조 정리 · 동작·assert 의미 변경 금지.
+- **금지:** assert 완화 · 기대값 변경 · assert/조건 삭제 · `@pytest.mark.skip` · `pytest.skip()` · `xfail`.
+
+## 파일 위치
+- 구현·상수: `src/validate_lines.py`
+- 테스트: `tests/test_validate_lines.py`
+- Command: `.cursor/commands/*.md`
+
+## AI 행동
+- 모든 응답은 한국어.
+- TDD 작업 시 응답 첫 줄 Phase 선언 (예: `Phase: RED`).
+- git commit / push — 사용자 명시 요청 시만.
+- "리뷰만" 요청에는 파일 수정하지 않음.
+- 없는 경로/파일을 추측으로 만들지 않음.
