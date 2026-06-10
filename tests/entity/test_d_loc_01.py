@@ -1,6 +1,5 @@
-import pytest
-
 from entity.blank_loc import blank_coords_row_major
+from tests._approval import assert_matches_golden
 
 GOLDEN_ID = "D-LOC-01"
 
@@ -35,4 +34,4 @@ def test_d_loc_01_golden_master(grid_g1):
     golden_text = _format_d_loc_01_golden(coords)
 
     # Then — D-LOC-01 Golden (FR-17)
-    pytest.fail(f"RED: D-LOC-01 golden — assert_matches_golden matched int[6]: {golden_text}")
+    assert_matches_golden(golden_text, GOLDEN_ID)

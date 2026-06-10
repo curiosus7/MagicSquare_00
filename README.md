@@ -290,6 +290,7 @@ Commands: `/red-test-plan` · `/red-skeleton` · `/tdd-red` · `/green-minimal` 
 | 04 | Harness · TDD RED | [04.REPORT.md](Report/04.REPORT.md) | [04.Export-Transcript.md](Prompting/04.Export-Transcript.md) |
 | 05 | ARRR · entity TDD · Golden | [05.REPORT.md](Report/05.REPORT.md) | [05.Export-Transcript.md](Prompting/05.Export-Transcript.md) |
 | 06 | PRD §8.2 테스트 플랜 · README | [06.REPORT.md](Report/06.REPORT.md) | [06.Export-Transcript.md](Prompting/06.Export-Transcript.md) |
+| 07 | T-G1/T-G4 RED·GREEN · D-LOC-01 Golden · PR #3 | [07.REPORT.md](Report/07.REPORT.md) | [07.Export-Transcript.md](Prompting/07.Export-Transcript.md) |
 
 ---
 

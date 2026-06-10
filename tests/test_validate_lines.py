@@ -1,4 +1,5 @@
 from validate_lines import GRID_SIZE, LINE_CELLS, LINE_IDS, MAGIC_CONSTANT, validate_lines
+from tests._approval import assert_matches_golden
 
 
 def _format_validation_golden(result: dict) -> str:
@@ -25,6 +26,7 @@ def test_g1_all_lines_pass(grid_complete):
     # Assert — T-G1: 10선 모두 MAGIC_CONSTANT
     assert result["status"] == "pass"
     assert result["failed_lines"] == []
+    assert_matches_golden(_format_validation_golden(result), "GM-G1")
 
 
 def test_g4_fails_with_wrong_anti_diagonal(grid_g4):
@@ -39,6 +41,7 @@ def test_g4_fails_with_wrong_anti_diagonal(grid_g4):
     # Assert — T-G4: D2만 틀림, failed_lines에 id·sum (FR-05)
     assert result["status"] == "fail"
     assert result["failed_lines"] == [{"id": d2, "sum": d2_wrong_sum}]
+    assert_matches_golden(_format_validation_golden(result), "GM-G4")
 
 
 def test_incomplete_when_grid_has_zero(grid_incomplete):
@@ -52,5 +55,4 @@ def test_incomplete_when_grid_has_zero(grid_incomplete):
     assert result["status"] == "incomplete"
     assert result["failed_lines"] == []
 
-    # Golden (GM-INC) — /golden-master 에서 assert_matches_golden 연결 예정
-    # assert_matches_golden(_format_validation_golden(result), "GM-INC")
+    assert_matches_golden(_format_validation_golden(result), "GM-INC")

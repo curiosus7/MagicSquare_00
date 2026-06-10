@@ -34,13 +34,13 @@ def validate_lines(grid: list[list[int]]) -> dict:
     """10선×MAGIC_CONSTANT 검증.
 
     선행: 0 포함 → incomplete (합 계산 없음).
-    failed_lines: fail 시 LINE_IDS 순서.
+    failed_lines: fail 시 LINE_IDS 순서, 각 항목 {id, sum}.
 
     Args:
         grid: 4×4 list[list[int]], 값 0~16.
 
     Returns:
-        {"status": "pass"|"fail"|"incomplete", "failed_lines": list[str]}
+        {"status": "pass"|"fail"|"incomplete", "failed_lines": list[dict]}
 
     Raises:
         ValueError: grid가 4×4가 아닐 때.
