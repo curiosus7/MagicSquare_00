@@ -15,14 +15,14 @@ def _format_d_sol_01_golden(
 
 
 def test_d_sol_01_step_a_success(grid_g1):
-    # Given
+    # Given — grid_g1
     grid = grid_g1
 
     # When
     ok, missing = solve_step_a(grid)
     coords = blank_coords_row_major(grid)
 
-    # Then
+    # Then — D-SOL-01 (Golden 잠금 완료)
     assert ok is True
     assert missing == [6, 15]
     assert_matches_golden(_format_d_sol_01_golden(missing, coords), GOLDEN_ID)

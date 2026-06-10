@@ -78,6 +78,134 @@ result = validate_lines([
 
 ---
 
+## 테스트 플랜 (PRD §8.2)
+
+PRD [§8.2 Test ID · Golden ID](docs/PRD.md) 기준. 각 테스트는 **Arrange → Act → Assert** (AAA) 순서.
+
+| Test ID | 테스트 함수 | Fixture | FR | 파일 | 상태 |
+|---------|-------------|---------|-----|------|------|
+| **T-G1** | `test_g1_all_lines_pass` | `grid_complete` | FR-02 | `tests/test_validate_lines.py` | 🔲 |
+| **T-G4** | `test_g4_fails_with_wrong_anti_diagonal` | `grid_g4` | FR-04, FR-05, FR-06 | `tests/test_validate_lines.py` | 🔲 |
+| **T-INC** | `test_incomplete_when_grid_has_zero` | 인라인 / `grid_incomplete` | FR-03 | `tests/test_validate_lines.py` | ✅ |
+| **D-LOC-01** | `test_d_loc_01_blank_coords_row_major` | `grid_g1` | DR-06 | `tests/entity/test_d_loc_01.py` | ✅ |
+| **D-SOL-01** | `test_d_sol_01_step_a_success` | `grid_g1` | FR-D-SOL-01 | `tests/entity/test_d_sol_01.py` | ✅ |
+
+### T-G1 — `test_g1_all_lines_pass` 🔲
+
+**FR-02:** 10선 **모두** 합이 34이면 `status: "pass"`, `failed_lines: []`
+
+| 단계 | 내용 |
+|------|------|
+| **Given** | `grid_complete` fixture — 과제 정답 4×4 (0 없음, 10선=34) |
+| **When** | `result = validate_lines(grid_complete)` |
+| **Then** | `result["status"] == "pass"` |
+| | `result["failed_lines"] == []` |
+
+**Fixture `grid_complete`:**
+
+```
+[16,  3,  2, 13]
+[ 5, 10, 11,  8]
+[ 9,  6,  7, 12]
+[ 4, 15, 14,  1]
+```
+
+**Golden:** GM-G1 — `pass`, `failed_lines: []`
+
+**TDD:** RED → `conftest.py`에 `grid_complete` 추가 → assert 본문 → GREEN(10선 합·pass 판정)
+
+---
+
+### T-G4 — `test_g4_fails_with_wrong_anti_diagonal` 🔲
+
+**FR-04:** 0 없고 하나 이상 합 ≠ 34 → `fail` · **FR-05:** `failed_lines`에 `id`·`sum` · **FR-06:** D1·D2 **모두** 검사
+
+| 단계 | 내용 |
+|------|------|
+| **Given** | `grid_g4` — 행·열·D1=34, **D2(부대각)만 sum=4** (Mom Test 대각 시나리오) |
+| **When** | `result = validate_lines(grid_g4)` |
+| **Then** | `result["status"] == "fail"` |
+| | `failed_lines`에 D2 포함, `sum == 4` |
+| | R1~R4, C1~C4, D1은 `failed_lines`에 **없음** (D2만 틀림) |
+
+**Fixture `grid_g4`:**
+
+```
+[ 1, 16, 16,  1]
+[16,  1,  1, 16]
+[16,  1, 16,  1]
+[ 1, 16,  1, 16]
+```
+
+→ D2(부↙) 셀 `(0,3)+(1,2)+(2,1)+(3,0)` = **4** (≠34)
+
+**Golden:** GM-G4 — `fail`, D2, `sum=4`
+
+**TDD:** RED → `grid_g4` fixture → assert(D2·sum) → GREEN(D2 검사 + FR-05 TypedDict)
+
+---
+
+### T-INC — `test_incomplete_when_grid_has_zero` ✅
+
+**FR-03:** 0(빈칸)이 **하나라도** 있으면 `status: "incomplete"`, `failed_lines: []` — **합 계산 생략**
+
+| 단계 | 내용 |
+|------|------|
+| **Given** | 인라인 4×4 — `(0,0)`에 `0` 1개, 나머지 1~16 |
+| **When** | `result = validate_lines(grid)` |
+| **Then** | `result["status"] == "incomplete"` |
+| | `result["failed_lines"] == []` |
+
+**Golden:** GM-INC — `incomplete`, `failed_lines: []` (🔲 Golden 잠금 예정)
+
+---
+
+### D-LOC-01 — `test_d_loc_01_blank_coords_row_major` ✅
+
+**DR-06:** 좌표 row-major, 0-index
+
+| 단계 | 내용 |
+|------|------|
+| **Given** | `grid_g1` — 0 두 칸 `(1,1)`, `(3,2)` |
+| **When** | `coords = blank_coords_row_major(grid_g1)` |
+| **Then** | `coords == [(1, 1), (3, 2)]` |
+
+**Fixture `grid_g1`:**
+
+```
+[ 1,  2,  3,  4]
+[ 5,  0,  7,  8]
+[ 9, 10, 11, 12]
+[13, 14,  0, 16]
+```
+
+---
+
+### D-SOL-01 — `test_d_sol_01_step_a_success` ✅
+
+**FR-D-SOL-01:** `solve_step_a(grid_g1)` → `ok=True`, `missing=[6, 15]`
+
+| 단계 | 내용 |
+|------|------|
+| **Given** | `grid_g1` |
+| **When** | `ok, missing = solve_step_a(grid)` · `coords = blank_coords_row_major(grid)` |
+| **Then** | `ok is True` |
+| | `missing == [6, 15]` |
+| | Golden **D-SOL-01**: `6 15 2 2 4 3` (missing 두 값 + 빈칸 좌표 1-index) |
+
+---
+
+### 실행 · 상수
+
+```bash
+python -m pytest tests/ -v
+# 개별: pytest tests/test_validate_lines.py::test_g1_all_lines_pass -v
+```
+
+상수 **34 / 16 / 4** — `entity.constants` · `validate_lines` import 우선 (리터럴 남발 금지).
+
+---
+
 ## 프로젝트 구조
 
 ```
@@ -161,6 +289,7 @@ Commands: `/red-test-plan` · `/red-skeleton` · `/tdd-red` · `/green-minimal` 
 | 03 | Mom Test + 세션 3 워크북 | [03.REPORT.md](Report/03.REPORT.md) | [03.Export-Transcript.md](Prompting/03.Export-Transcript.md) |
 | 04 | Harness · TDD RED | [04.REPORT.md](Report/04.REPORT.md) | [04.Export-Transcript.md](Prompting/04.Export-Transcript.md) |
 | 05 | ARRR · entity TDD · Golden | [05.REPORT.md](Report/05.REPORT.md) | [05.Export-Transcript.md](Prompting/05.Export-Transcript.md) |
+| 06 | PRD §8.2 테스트 플랜 · README | [06.REPORT.md](Report/06.REPORT.md) | [06.Export-Transcript.md](Prompting/06.Export-Transcript.md) |
 
 ---
 
